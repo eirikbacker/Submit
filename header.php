@@ -11,23 +11,7 @@
 	<?php wp_head(); ?>
 </head>
 <body>
-	<div id="menu">
-		<h1 class="cm"><a href="<?php bloginfo('home'); ?>/"><?php bloginfo('name'); ?></a></h1>
-		<ul class="cm c">
-			<?php if(!intval(get_option('page_on_front'))){ ?>
-				<li class="page_item<?php if(is_front_page())echo ' current_page_item'; ?>">
-					<a href="<?php bloginfo('home'); ?>/"><?php _e('Forsiden'); ?></a>
-				</li>
-			<? } ?>
-			<?php wp_list_pages('title_li=&parent=0'); ?>
-			<li><a class="icon-globe" href="#"></a></li>
-			<li><a class="icon-search" href="?s="></a>
-				<form method="get" action="<?php bloginfo('home'); ?>/"><input type="text" name="s"></form>
-			</li>
-			<li><a class="icon-user" href="<?php bloginfo('home'); ?>/">
-				<?php echo get_member()? 'Hei, ' . get_member('display_name') . '!' : __('Logg inn'); ?>
-			</a></li>
-		</ul>
-	</div>
-	<div id="wrap2">
-		<?php get_header(get_member()? 'member' : 'banner'); ?>
+	<ul id="head">
+		<?php wp_list_pages('title_li=&parent=0'); ?>
+	</ul>
+	<div id="wrap">

@@ -29,5 +29,5 @@
 			</a></li>
 		</ul>
 	</div>
-	<div id="wrap">
+	<div id="wrap2">
 		<?php get_header(get_member()? 'member' : 'banner'); ?>

@@ -1,57 +1,34 @@
 /******************************************************************
 
-
 	* Theme Name: SterkSubmit
 	* Theme URI: http://sterkreklame.no/
 	* Description: Innsedingsverktøy for Sterk.
-	* Author: <a href="http://kirie.no">Eirik Backer</a>
+	* Author: Eirik Backer og Pål Eirik Strøm
 	* Version: 1.0
-
 
 ******************************************************************/
 
-/* Tag styling
--------------------------------------------------------------- */
-html,body,form,blockquote{border:0;margin:0;padding:0}
-img{border:0;vertical-align:middle;-ms-interpolation-mode:bicubic}p{margin:0 0 1em 0}
-input,textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
-html{cursor:default;font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body,input,select,textarea{color:#3c3c3c;font:400 80%/1.7em "Open Sans","Helvetica","Arial",sans-serif}
-a{color:#338187;text-decoration:underline;outline:0}a:hover,a:focus{text-decoration:none;color:#000}
-table{width:100%;border:0;border-collapse:collapse;border-spacing:0}table,tr,td{vertical-align:top}
-blockquote{font-size:1.2em;color:#000;margin-right:7%}
+html{overflow-y:scroll}
+body{padding:80px 0}
 
-h1,h2,h3,h4,h5,h6{font:300 2em/1.2em "Open Sans","Helvetica","Arial",sans-serif;margin:0 0 .5em 0;color:#2a2924;-webkit-font-smoothing:antialiased}
-h1 a,h2 a,h3 a,h4 a,h5 a,h6 a{text-decoration:none;display:block;color:#2a2924}
+textarea{resize:vertical}
+input[data-card="Visa"]{background:#fff url(assets/visa.png) 98% 50% no-repeat}
+input[data-card="MasterCard"]{background:#fff url(assets/mastercard.png) 98% 50% no-repeat}
 
-/* Main elements
--------------------------------------------------------------- */
-#menu{position:fixed;z-index:6;top:0;left:0;width:100%;background:#fff;box-shadow:0 3px 3px rgba(0,0,0,.1)}
-#menu ul{font:1em "Montserrat","Gotham","Helvetica","Arial",sans-serif;height:45px;text-align:right;white-space:nowrap}
-#menu li{text-transform:uppercase;border:0 solid #e7eff0;border-left-width:1px;transition:.2s all}
-#menu li.page_item{float:left;text-align:left;min-width:140px;border-width:0 1px;margin-right:-1px}
-#menu li.current_page_item a,#menu li.current_page_ancestor a{background:#969284;color:#fff;padding-bottom:5px}
-#menu li a{text-decoration:none;display:block;line-height:40px;padding:0 12px;color:#347f8a;transition:.2s all}
-#menu li a:hover,#menu li a:focus{background:#e7eff0;color:#347f8a}
+.uploader{border:1px dashed #ccc;border-radius:7px;margin-bottom:20px;padding:20px}
+.uploader.hover{border-color:#000}
+.uploader-queue{width:60%}
+.uploader-queue .file{background:#ececec;border:solid 1px #ccc;margin-bottom:4px;padding:5px}
+.uploader-queue .fileprogress{width:0;background:#B7C53D;height:5px}
 
-/* Grid framework
--------------------------------------------------------------- */
-.hidden{display:none;visibility:hidden}
-.cf{zoom:1}.cf:after{clear:both}.cf:before,.cf:after{content:"";display:table}
-.cm{display:block;margin:0 auto;overflow:hidden;max-width:1000px;_width:1000px;padding:0 25px}
-.c,.c > .c{letter-spacing:-0.31em;*letter-spacing:normal;word-spacing:-0.43em;list-style:none}
-.c > *{display:inline-block;zoom:1;*display:inline;letter-spacing:normal;word-spacing:normal;vertical-align:top}.box{padding:10px 25px}
-.c1{width:100%}.c1x2{width:50%}.c1x3{width:33.33333%}.c2x3{width:66.66666%}.c1x4{width:25%}.c3x4{width:75%}.c1x5{width:20%}.c2x5{width:40%}
-.c3x5{width:60%}.c4x5{width:80%}.c1x6{width:16.656%}.c5x6{width:83.33%}.c1x8{width:12.5%}.c3x8{width:37.5%}.c5x8{width:62.5%}.c7x8{width:87.5%}
-@media(max-width:750px){.c1,.c1x2,.c1x3,.c2x3,.c1x4,.c3x4,.c1x5,.c2x5,.c3x5,.c4x5,.c1x6,.c5x6,.c1x8,.c3x8,.c5x8,.c7x8{width:100%}}
+.index-project{border:1px solid #ddd;background:#f6f6f6;padding:20px;margin-bottom:25px;-moz-border-radius:4px;border-radius:4px}
+.index-project.muted{border:1px dashed #999;background:none}
+.index-project h4{margin:0;line-height:1em}
+.index-project div{margin:5px 0;font-size:.9em}
 
-
-/* Classes
--------------------------------------------------------------- */
-.alignleft{float:left;margin:3px 25px 15px 0;display:inline}
-.alignright{float:right;margin:3px 0 15px 25px;display:inline}
-.aligncenter{display:block;margin:0 auto 20px auto;clear:both}
-.alignnone{display:block;margin:0;clear:both;width:100%;height:auto!important}
-
-.button a{color:#2a2924;background:#eff0e7 100% 50% no-repeat;margin:0 2px 2px 0;padding:2px 9px;text-decoration:none;transition:.2s all}
-.button a:hover,.button a:focus{background:#7aa4aa;color:#fff}.button a:before{content:'+';float:right;padding-left:30px}
+.single-project dt{text-align:left}
+.single-project dd{margin-bottom:20px}
+.single-project input[name="title"]{font-size:30px;line-height:50px;height:50px}
+.single-project label{font-size:.8em;color:#666;line-height:1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.single-project .accordion-heading input:checked + a{color:#294c6d;background:#e8f0f7;font-weight:bold}
+.single-project .accordion-heading input{float:left;margin:12px 20px 0 10px}

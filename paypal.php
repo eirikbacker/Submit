@@ -1,30 +1,70 @@
-<html>
-<head>
-	<title>PayPal Merchant SDK - DoDirectPayment API</title>
-</head>
-<body>
-	<!--<form method="POST" action="DoDirectPayment.php" name="DoDirectPaymentForm">
-
-		First name <input type="text" name="firstName" value="John">
-		<br>Last name <input type="text" name="lastName" value="Doe">
-		<br>Card type 
+<?php
+	get_header();
+?>
+<form method="post" class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label" for="firstName">Navn</label>
+		<div class="controls">
+			<input type="text" class="span3" id="firstName" name="firstname" placeholder="Fornavn">
+			<input type="text" class="span3" id="lastName" name="lastName" placeholder="Etternavn">
+		</div>
+	</div>
+	<!--<div class="control-group">
+		<label class="control-label" for="creditCardType">Card type</label>
+		<div class="controls">
 			<select name="creditCardType">
 				<option value="Visa" selected="selected">Visa</option>
 				<option value="MasterCard">MasterCard</option>
 				<option value="Amex">American Express</option>
 			</select>
-		<br>Card number <input type="text" size="19" maxlength="19" name="creditCardNumber">
-		<br>Expiry date <input name="expDateMonth" type="text" size="2"><input name="expDateYear" type="text" size="4">
-		<br>CVV <input type="text" size="3" name="cvv2Number" value="962">
-		<br>Amount <input type="text" size="5" maxlength="7" name="amount" value="1.00"> NOK			
-		<br>Billing address <input type="text" size="25" maxlength="100" name="street" value="1 Main St">
-		<br>City <input type="text" size="25" maxlength="40" name="city" value="San Jose">
-		<br>State <input type="text" name="state" value="CA">
-		<br>Zip <input type="text" size="10" maxlength="10" name="zip" value="95131"> (5 or 9 digits)
-		<br>Country <input type="text" size="10" maxlength="10" name="country" value="NO">
-		<br><button type="submit" name="DoDirectPaymentBtn">DoDirectPayment</button>
-	</form>-->
+		</div>
+	</div>-->
+	<div class="control-group">
+		<label class="control-label" for="creditCardNumber">Kort</label>
+		<div class="controls">
+			<input type="text" class="span3" id="creditCardNumber" name="creditCardNumber" placeholder="Kortnummer">			
+			<select class="span1" id="expDateYear" name="expDateYear">
+				<?php foreach(range(1, 12) as $m){ ?>
+					<option value="<?php echo $m; ?>"><?php echo str_pad($m, 2, '0', STR_PAD_LEFT); ?></option>
+				<?php } ?>
+			</select>
+			<select class="span1" id="expDateMonth" name="expDateMonth">
+				<?php foreach(range($now = date('Y'), $now + 20) as $y){ ?>
+					<option value="<?php echo $y . ($y==$now? '" selected="selected':''); ?>"><?php echo $y; ?></option>
+				<?php } ?>
+			</select>
+			<input type="text" class="span1" id="cvv2Number" name="cvv2Number" placeholder="CVV" maxlength="3">
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<input type="hidden" name="creditCardType" value="">
+			<button type="submit" class="btn btn-primary" name="DoDirectPaymentBtn">Send inn og betal</button>
+		</div>
+	</div>
+</form>
 
+<!--<form method="POST" action="DoDirectPayment.php" name="DoDirectPaymentForm">
+
+	First name <input type="text" name="firstName" value="John">
+	<br>Last name <input type="text" name="lastName" value="Doe">
+	<br>Card type 
+		<select name="creditCardType">
+			<option value="Visa" selected="selected">Visa</option>
+			<option value="MasterCard">MasterCard</option>
+			<option value="Amex">American Express</option>
+		</select>
+	<br>Card number <input type="text" size="19" maxlength="19" name="creditCardNumber">
+	<br>Expiry date <input name="expDateMonth" type="text" size="2"><input name="expDateYear" type="text" size="4">
+	<br>CVV <input type="text" size="3" name="cvv2Number" value="962">
+	<br>Amount <input type="text" size="5" maxlength="7" name="amount" value="1.00"> NOK			
+	<br>Billing address <input type="text" size="25" maxlength="100" name="street" value="1 Main St">
+	<br>City <input type="text" size="25" maxlength="40" name="city" value="San Jose">
+	<br>State <input type="text" name="state" value="CA">
+	<br>Zip <input type="text" size="10" maxlength="10" name="zip" value="95131"> (5 or 9 digits)
+	<br>Country <input type="text" size="10" maxlength="10" name="country" value="NO">
+	<br><button type="submit" name="DoDirectPaymentBtn">DoDirectPayment</button>
+</form>-->
 <?php
 	//extract data from the post
 	/*extract($_POST);
@@ -68,10 +108,9 @@
 	//close connection
 	curl_close($ch);*/
 
-	$result = 'TIMESTAMP=2012%2d11%2d20T20%3a00%3a20Z&CORRELATIONID=4986d2e273696&ACK=Success&VERSION=95&BUILD=4137385&AMT=23%2e00&CURRENCYCODE=USD&AVSCODE=X&CVV2MATCH=M&TRANSACTIONID=09617561PX030540W';
-	
+	/*$result = 'TIMESTAMP=2012%2d11%2d20T20%3a00%3a20Z&CORRELATIONID=4986d2e273696&ACK=Success&VERSION=95&BUILD=4137385&AMT=23%2e00&CURRENCYCODE=USD&AVSCODE=X&CVV2MATCH=M&TRANSACTIONID=09617561PX030540W';
 	parse_str($result, $data);
-	var_export($data);
+	var_export($data);*/
 
 /*Request 
 -------
@@ -108,6 +147,4 @@ Response
 &TRANSACTIONID=4AA45196YV4521234
 ...*/
 
-?>
-</body>
-</html>
+	get_footer();

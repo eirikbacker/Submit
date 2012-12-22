@@ -1,0 +1,25 @@
+a,input{-webkit-transition:.2s all;-moz-transition:.2s all;transition:.2s all}
+
+body.login{background:#000 url(assets/login-back.png)}
+body.login div#login h1 a{background:url(assets/login-logo.png) 0 100% no-repeat;background-size:auto;margin-bottom:20px}
+body.login div#login form{border:0;margin:0;padding:0;background:none;overflow:hidden}
+body.login div#login form{-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none}
+
+body.login div#login br{display:none}
+body.login div#login p{margin:0}
+body.login div#login p input{background:transparent;color:#fff;margin:1px 0;border:1px solid #666}
+body.login div#login p label{text-transform:uppercase;font-size:.9em;color:#ccc;display:block;padding-top:9px}
+body.login div#login p.submit input#wp-submit:hover{background:#000;color:#fff}
+body.login div#login p.submit input#wp-submit{text-transform:uppercase;font-size:.9em!important;padding:5px 9px 3px 9px;text-shadow:none}
+body.login div#login p.submit input#wp-submit{margin-top:15px;background:#fff;color:#000;border:1px solid #fff;border-radius:3px}
+body.login div#login p.forgetmenot{display:none}
+
+body.login div#login p#nav{float:left;text-shadow:none;color:#666;margin:-20px 0;padding:0;text-transform:uppercase;font-size:.9em}
+body.login div#login p#nav a:hover,body.login div#login p#nav a:focus{text-decoration:underline}
+body.login div#login p#nav a{text-decoration:none;color:#fff!important}
+body.login div#login p#nav a + a{color:#999!important}
+body.login div#login p#backtoblog{display:none}
+body.login div#login p#reg_passmail{display:none}
+
+body.login div#login p.message{border:0;color:#fff;font-size:1.1em;background:none;padding:10px 0}
+body.login div#login p.message{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0}

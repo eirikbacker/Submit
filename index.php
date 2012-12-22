@@ -1,60 +1,49 @@
 <?php
-	//Template Name: News
 	get_header();
-	if(is_page())query_posts('page_type=post&paged=' . max(1,intval(get_query_var('page'))));	//Make sure we loop posts
-	$GLOBALS['more'] = intval(is_single());
+	query_posts('posts_per_page=-1&author=' . get_current_user_id());
 ?>
-<div id="filter">
-	<ul class="cm c">
-		<li>
-			<select name="nytt">
-				<option value="<?php bloginfo('url'); ?>">Velg region eller bransje</option>
-				<?php foreach(get_categories('hide_empty=0&parent=0&order=DESC&exclude=1') as $v){		//exclude 1 == uncategorized
-					echo '<optgroup label="' . $v->name . '">';
-					foreach(get_categories('hide_empty=0&child_of=' . $v->term_id) as $cat){
-						$sel = $cat->slug == is_category($cat->term_id)? '" selected="selected':'';
-						echo '<option value="' . get_term_link($cat) . $sel . '">' . $cat->name . '</option>';
-					}
-					echo '</optgroup>';
-				} ?>
-			</select>
-		</li>
-		<?php if(is_category()){
-			$cat  = get_queried_object();
-			$type = get_category($cat->parent)->slug;
-			$top  = get_posts('numberposts=1&post_type=' . $type . '&meta_key=' . $cat->taxonomy . '&meta_value=' . $cat->term_id);
-			
-			wp_list_pages('post_type=' . $type . '&title_li=&depth=0&child_of=' . reset($top)->ID);
-		} ?>
-	</ul>
-</div>
-<div id="cont" class="cm c">
-	<div class="c2x3">
-		<?php while(have_posts()){the_post(); ?>
-			<div class="cf post<?php if(!get_member() && !is_paged() && $wp_query->current_post)echo ' post-mini'; ?>">
-				<?php if(get_member() || is_single())the_post_thumbnail(is_single()? 'large' : 'medium', 'class=post-image'); ?>
-				<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-				<div class="post-meta"><?php the_time('d. F'); ?>&nbsp; &Iota; &nbsp;<?php the_category('&nbsp; &Iota; &nbsp;'); ?></div>
-				<div class="post-content"><?php the_content('Les videre'); ?></div>
-				<?php if(is_single() && comments_open()){ ?>
-					<div class="post-comments">
-						<h5><?php _e('Kommentarer'); ?></h5>
-						<div class="fb-comments" data-href="<?php the_permalink(); ?>" data-num-posts="10" data-width="620"></div>
-					</div>
-				<?php } ?>
-			</div>
-		<?php } ?>
-		<div class="box">
-			<?php echo paginate_links(array(
-				'base' 		=> str_replace($big = 99999, '%#%', esc_url(get_pagenum_link($big))),
-				'prev_text'    => __('&lsaquo; Nyere'),
-				'next_text'    => __('Eldre &rsaquo;'),
-				'current' 	=> max( 1, get_query_var('paged')),
-				'total' 	=> $wp_query->max_num_pages,
-			)); ?>
+<?php if(get_user_total()){ ?>
+	<div class="alert alert-error">
+		<strong>NB!</strong>
+		<?php 
+			$link = '<a href="' . get_bloginfo('url') . '/paypal/">' . __('sendt inn  og betalt', get_template()) . ' &rsaquo;</a>';
+			echo sprintf(__('Husk at prosjektene ikke er registret før du har %s', get_template()), $link);
+		?>
+	</div>
+<?php } ?>
+<div class="row-fluid">
+	<div class="span4">
+		<div class="index-project muted equalize">
+			<a class="btn btn-primary pull-right" href="<?php bloginfo('url'); ?>/single/">
+				<i class="icon-plus icon-white"></i> 
+				<?php _e('Legg til prosjekt', get_template()); ?>
+			</a>
+			<h4><?php _e('Nytt prosjekt', get_template()); ?></h4>
+			<div><?php _e('Ukategorisert', get_template()); ?></div>
 		</div>
 	</div>
-	<div class="c1x3"><?php dynamic_sidebar('news'); ?></div>
+	<?php while(have_posts()){the_post(); ?>
+		<?php if(!(($wp_query->current_post+1)%3))echo '</div><div class="row-fluid">'; ?>
+		<div class="span4">
+			<div class="index-project equalize">
+				<a class="btn pull-right" href="<?php the_permalink(); ?>">
+					<i class="icon-edit"></i> 
+					<?php _e('Rediger', get_template()); ?>
+				</a>
+				<h4><?php echo ucfirst($post->post_title); ?></h4>
+				<div><?php echo implode(', ', wp_list_pluck(get_the_category(), 'name')); ?></div>
+				<?php if($total = get_post_total()){ ?>
+					<span class="label label-important">
+						<?php echo sprintf(__('Utestående %s,- NOK', get_template()), $total); ?>
+					</span>
+				<?php }else if(!get_the_category()){ ?>
+					<span class="label label-important">
+						<?php _e('Mangler kategori!', get_template()); ?>
+					</span>
+				<?php } ?>
+			</div>
+		</div>
+	<?php } ?>
 </div>
 <?php
 	get_footer();

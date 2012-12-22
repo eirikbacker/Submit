@@ -1,20 +1,87 @@
-//H5F - v1.0.0 - 2012-09-30 / https://github.com/ryanseddon/H5F/ /  Copyright (c) 2012 Ryan Seddon; Licensed MIT
-var H5F=H5F||{};(function(a){var b=a.createElement("input"),c=/^[a-zA-Z0-9.!#$%&'*+-\/=?\^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,d=/[a-z][\-\.+a-z]*:\/\//i,e=/^(input|select|textarea)$/i,f,g,h,i,j="",k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C;k=function(a,b){var c=!a.nodeType||!1,d={validClass:"valid",invalidClass:"error",requiredClass:"required",placeholderClass:"placeholder"};if(typeof b=="object")for(var e in d)typeof b[e]=="undefined"&&(b[e]=d[e]);i=b||d;if(c)for(var f=0,g=a.length;f<g;f++)l(a[f]);else l(a)},l=function(a){var b=a.elements,c=b.length,d,e=!!a.attributes.novalidate;w(a,"invalid",n,!0),w(a,"blur",n,!0),w(a,"input",n,!0),w(a,"keyup",n,!0),w(a,"focus",n,!0),w(a,"change",n,!0),w(a,"submit",function(b){f=!0,!e&&!a.checkValidity()&&y(b)},!1);if(!q()){a.checkValidity=function(){return o(a)};while(c--)d=!!b[c].attributes.required,b[c].nodeName.toLowerCase()!=="fieldset"&&m(b[c])}},m=function(a){var b=a,c=v(b),d={type:b.getAttribute("type"),pattern:b.getAttribute("pattern"),placeholder:b.getAttribute("placeholder")},e=/^(email|url)$/i,f=/^(input|keyup)$/i,g=e.test(d.type)?d.type:d.pattern?d.pattern:!1,i=r(b,g),k=t(b,"step"),l=t(b,"min"),m=t(b,"max"),n=j!=="";b.checkValidity=function(){return o.call(this,b)},b.setCustomValidity=function(a){p.call(b,a)},b.validationMessage=j,b.validity={valueMissing:c,patternMismatch:i,rangeUnderflow:l,rangeOverflow:m,stepMismatch:k,customError:n,valid:!c&&!i&&!k&&!l&&!m&&!n},d.placeholder&&!f.test(h)&&s(b)},n=function(a){var b=z(a)||a,c=/^(input|keyup|focusin|focus|change)$/i,d=/^(submit|image|button|reset)$/i,f=/^(checkbox|radio)$/i,g=!0;e.test(b.nodeName)&&!d.test(b.type)&&!d.test(b.nodeName)&&(h=a.type,q()||m(b),b.validity.valid&&(b.value!==""||f.test(b.type))||b.value!==b.getAttribute("placeholder")&&b.validity.valid?(B(b,[i.invalidClass,i.requiredClass]),A(b,i.validClass)):c.test(h)?b.validity.valueMissing&&B(b,[i.requiredClass,i.invalidClass,i.validClass]):b.validity.valueMissing?(B(b,[i.invalidClass,i.validClass]),A(b,i.requiredClass)):b.validity.valid||(B(b,[i.validClass,i.requiredClass]),A(b,i.invalidClass)),h==="input"&&g&&(x(b.form,"keyup",n,!0),g=!1))},o=function(a){var b,c,d,e,g=!1;if(a.nodeName.toLowerCase()==="form"){b=a.elements;for(var h=0,i=b.length;h<i;h++)c=b[h],d=!!c.attributes.required,e=!!c.attributes.pattern,c.nodeName.toLowerCase()!=="fieldset"&&(d||e&&d)&&(n(c),!c.validity.valid&&!g&&(f&&c.focus(),g=!0));return!g}return n(a),a.validity.valid},p=function(a){var b=this;j=a,b.validationMessage=j},q=function(){return C(b,"validity")&&C(b,"checkValidity")},r=function(a,b){if(b==="email")return!c.test(a.value);if(b==="url")return!d.test(a.value);if(!b)return!1;var e=a.getAttribute("placeholder"),f=a.value;return g=new RegExp("^(?:"+b+")$"),f===e?!0:f===""?!1:!g.test(a.value)},s=function(a){var c={placeholder:a.getAttribute("placeholder")},d=/^(focus|focusin|submit)$/i,e=/^(input|textarea)$/i,f=/^password$/i,g="placeholder"in b;!g&&e.test(a.nodeName)&&!f.test(a.type)&&(a.value===""&&!d.test(h)?(a.value=c.placeholder,w(a.form,"submit",function(){h="submit",s(a)},!0),A(a,i.placeholderClass)):a.value===c.placeholder&&d.test(h)&&(a.value="",B(a,i.placeholderClass)))},t=function(a,b){var c=parseInt(a.getAttribute("min"),10)||0,d=parseInt(a.getAttribute("max"),10)||!1,e=parseInt(a.getAttribute("step"),10)||1,f=parseInt(a.value,10),g=(f-c)%e;if(!!v(a)||!!isNaN(f))return a.getAttribute("type")==="number"?!0:!1;if(b==="step")return a.getAttribute("step")?g!==0:!1;if(b==="min")return a.getAttribute("min")?f<c:!1;if(b==="max")return a.getAttribute("max")?f>d:!1},u=function(a){var b=!!a.attributes.required;return b?v(a):!1},v=function(a){var b=a.getAttribute("placeholder"),c=!!a.attributes.required;return!(!c||a.value!==""&&a.value!==b)},w=function(a,b,c,d){C(window,"addEventListener")?a.addEventListener(b,c,d):C(window,"attachEvent")&&typeof window.event!="undefined"&&(b==="blur"?b="focusout":b==="focus"&&(b="focusin"),a.attachEvent("on"+b,c))},x=function(a,b,c,d){C(window,"removeEventListener")?a.removeEventListener(b,c,d):C(window,"detachEvent")&&typeof window.event!="undefined"&&a.detachEvent("on"+b,c)},y=function(a){a=a||window.event,a.stopPropagation&&a.preventDefault?(a.stopPropagation(),a.preventDefault()):(a.cancelBubble=!0,a.returnValue=!1)},z=function(a){return a=a||window.event,a.target||a.srcElement},A=function(a,b){var c;a.className?(c=new RegExp("(^|\\s)"+b+"(\\s|$)"),c.test(a.className)||(a.className+=" "+b)):a.className=b},B=function(a,b){var c,d,e=typeof b=="object"?b.length:1,f=e;if(a.className)if(a.className===b)a.className="";else while(e--)c=new RegExp("(^|\\s)"+(f>1?b[e]:b)+"(\\s|$)"),d=a.className.match(c),d&&d.length===3&&(a.className=a.className.replace(c,d[1]&&d[2]?" ":""))},C=function(a,b){var c=typeof a[b],d=new RegExp("^function|object$","i");return!!(d.test(c)&&a[b]||c==="unknown")},window.H5F={setup:k}})(document);
-
-//StyleFix 1.0.3 & PrefixFree 1.0.7 /  @author Lea Verou / MIT license
-(function(){function t(e,t){return[].slice.call((t||document).querySelectorAll(e))}if(!window.addEventListener)return;var e=window.StyleFix={link:function(t){try{if(t.rel!=="stylesheet"||t.hasAttribute("data-noprefix"))return}catch(n){return}var r=t.href||t.getAttribute("data-href"),i=r.replace(/[^\/]+$/,""),s=t.parentNode,o=new XMLHttpRequest,u;o.onreadystatechange=function(){o.readyState===4&&u()};u=function(){var n=o.responseText;if(n&&t.parentNode&&(!o.status||o.status<400||o.status>600)){n=e.fix(n,!0,t);if(i){n=n.replace(/url\(\s*?((?:"|')?)(.+?)\1\s*?\)/gi,function(e,t,n){return/^([a-z]{3,10}:|\/|#)/i.test(n)?e:'url("'+i+n+'")'});var r=i.replace(/([\\\^\$*+[\]?{}.=!:(|)])/g,"\\$1");n=n.replace(RegExp("\\b(behavior:\\s*?url\\('?\"?)"+r,"gi"),"$1")}var u=document.createElement("style");u.textContent=n;u.media=t.media;u.disabled=t.disabled;u.setAttribute("data-href",t.getAttribute("href"));s.insertBefore(u,t);s.removeChild(t);u.media=t.media}};try{o.open("GET",r);o.send(null)}catch(n){if(typeof XDomainRequest!="undefined"){o=new XDomainRequest;o.onerror=o.onprogress=function(){};o.onload=u;o.open("GET",r);o.send(null)}}t.setAttribute("data-inprogress","")},styleElement:function(t){if(t.hasAttribute("data-noprefix"))return;var n=t.disabled;t.textContent=e.fix(t.textContent,!0,t);t.disabled=n},styleAttribute:function(t){var n=t.getAttribute("style");n=e.fix(n,!1,t);t.setAttribute("style",n)},process:function(){t('link[rel="stylesheet"]:not([data-inprogress])').forEach(StyleFix.link);t("style").forEach(StyleFix.styleElement);t("[style]").forEach(StyleFix.styleAttribute)},register:function(t,n){(e.fixers=e.fixers||[]).splice(n===undefined?e.fixers.length:n,0,t)},fix:function(t,n,r){for(var i=0;i<e.fixers.length;i++)t=e.fixers[i](t,n,r)||t;return t},camelCase:function(e){return e.replace(/-([a-z])/g,function(e,t){return t.toUpperCase()}).replace("-","")},deCamelCase:function(e){return e.replace(/[A-Z]/g,function(e){return"-"+e.toLowerCase()})}};(function(){setTimeout(function(){t('link[rel="stylesheet"]').forEach(StyleFix.link)},10);document.addEventListener("DOMContentLoaded",StyleFix.process,!1)})()})();(function(e){function t(e,t,r,i,s){e=n[e];if(e.length){var o=RegExp(t+"("+e.join("|")+")"+r,"gi");s=s.replace(o,i)}return s}if(!window.StyleFix||!window.getComputedStyle)return;var n=window.PrefixFree={prefixCSS:function(e,r,i){var s=n.prefix;n.functions.indexOf("linear-gradient")>-1&&(e=e.replace(/(\s|:|,)(repeating-)?linear-gradient\(\s*(-?\d*\.?\d*)deg/ig,function(e,t,n,r){return t+(n||"")+"linear-gradient("+(90-r)+"deg"}));e=t("functions","(\\s|:|,)","\\s*\\(","$1"+s+"$2(",e);e=t("keywords","(\\s|:)","(\\s|;|\\}|$)","$1"+s+"$2$3",e);e=t("properties","(^|\\{|\\s|;)","\\s*:","$1"+s+"$2:",e);if(n.properties.length){var o=RegExp("\\b("+n.properties.join("|")+")(?!:)","gi");e=t("valueProperties","\\b",":(.+?);",function(e){return e.replace(o,s+"$1")},e)}if(r){e=t("selectors","","\\b",n.prefixSelector,e);e=t("atrules","@","\\b","@"+s+"$1",e)}e=e.replace(RegExp("-"+s,"g"),"-");e=e.replace(/-\*-(?=[a-z]+)/gi,n.prefix);return e},property:function(e){return(n.properties.indexOf(e)?n.prefix:"")+e},value:function(e,r){e=t("functions","(^|\\s|,)","\\s*\\(","$1"+n.prefix+"$2(",e);e=t("keywords","(^|\\s)","(\\s|$)","$1"+n.prefix+"$2$3",e);return e},prefixSelector:function(e){return e.replace(/^:{1,2}/,function(e){return e+n.prefix})},prefixProperty:function(e,t){var r=n.prefix+e;return t?StyleFix.camelCase(r):r}};(function(){var e={},t=[],r={},i=getComputedStyle(document.documentElement,null),s=document.createElement("div").style,o=function(n){if(n.charAt(0)==="-"){t.push(n);var r=n.split("-"),i=r[1];e[i]=++e[i]||1;while(r.length>3){r.pop();var s=r.join("-");u(s)&&t.indexOf(s)===-1&&t.push(s)}}},u=function(e){return StyleFix.camelCase(e)in s};if(i.length>0)for(var a=0;a<i.length;a++)o(i[a]);else for(var f in i)o(StyleFix.deCamelCase(f));var l={uses:0};for(var c in e){var h=e[c];l.uses<h&&(l={prefix:c,uses:h})}n.prefix="-"+l.prefix+"-";n.Prefix=StyleFix.camelCase(n.prefix);n.properties=[];for(var a=0;a<t.length;a++){var f=t[a];if(f.indexOf(n.prefix)===0){var p=f.slice(n.prefix.length);u(p)||n.properties.push(p)}}n.Prefix=="Ms"&&!("transform"in s)&&!("MsTransform"in s)&&"msTransform"in s&&n.properties.push("transform","transform-origin");n.properties.sort()})();(function(){function i(e,t){r[t]="";r[t]=e;return!!r[t]}var e={"linear-gradient":{property:"backgroundImage",params:"red, teal"},calc:{property:"width",params:"1px + 5%"},element:{property:"backgroundImage",params:"#foo"},"cross-fade":{property:"backgroundImage",params:"url(a.png), url(b.png), 50%"}};e["repeating-linear-gradient"]=e["repeating-radial-gradient"]=e["radial-gradient"]=e["linear-gradient"];var t={initial:"color","zoom-in":"cursor","zoom-out":"cursor",box:"display",flexbox:"display","inline-flexbox":"display",flex:"display","inline-flex":"display"};n.functions=[];n.keywords=[];var r=document.createElement("div").style;for(var s in e){var o=e[s],u=o.property,a=s+"("+o.params+")";!i(a,u)&&i(n.prefix+a,u)&&n.functions.push(s)}for(var f in t){var u=t[f];!i(f,u)&&i(n.prefix+f,u)&&n.keywords.push(f)}})();(function(){function s(e){i.textContent=e+"{}";return!!i.sheet.cssRules.length}var t={":read-only":null,":read-write":null,":any-link":null,"::selection":null},r={keyframes:"name",viewport:null,document:'regexp(".")'};n.selectors=[];n.atrules=[];var i=e.appendChild(document.createElement("style"));for(var o in t){var u=o+(t[o]?"("+t[o]+")":"");!s(u)&&s(n.prefixSelector(u))&&n.selectors.push(o)}for(var a in r){var u=a+" "+(r[a]||"");!s("@"+u)&&s("@"+n.prefix+u)&&n.atrules.push(a)}e.removeChild(i)})();n.valueProperties=["transition","transition-property"];e.className+=" "+n.prefix;StyleFix.register(n.prefixCSS)})(document.documentElement);
-
-//Hide URL-bar iPhone / https://gist.github.com/1183357
-(function(a){var b=a.document;if(!location.hash&&a.addEventListener){window.scrollTo(0,1);var c=1,d=function(){return a.pageYOffset||"CSS1Compat"===b.compatMode&&b.documentElement.scrollTop||b.body.scrollTop||0},e=setInterval(function(){b.body&&(clearInterval(e),c=d(),a.scrollTo(0,1===c?0:1))},15);a.addEventListener("load",function(){setTimeout(function(){20>d()&&a.scrollTo(0,1===c?0:1)},0)})}})(this);
-
-//Google Webfonts and Analytics
-window.WebFontConfig = {google:{families:['Montserrat::latin','Open+Sans:300italic,400italic,700italic,400,300,700:latin']}};
+//Google Analytics
 window._gaq = [['_setAccount','UA-0000000-0'],['_trackPageview'],['_trackPageLoadTime']];
-jQuery.ajax({dataType:'script', cache:true, url:'//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'});
 //jQuery.ajax({dataType:'script', cache:true, url:('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js'});
 
 //Smart links
 jQuery(document).on('click', 'a', function(e){
 	if(this.href.indexOf('.pdf') > 0)return !(window.open('http://docs.google.com/gview?embedded=true&url=' + this.href)||1);
 	if(this.hostname && this.hostname !== location.hostname)return e.metaKey || !(window.open(this.href)||1);
+});
+
+//Equalize
+jQuery(window).on('load resize', {}, function(e){
+	var box = (e.data.box = e.data.box || jQuery('.equalize')).css('height','auto'), fix = [], x, cur;
+	jQuery.each(box, function(){if(this.offsetTop !== x){x = this.offsetTop;fix.push(cur = [])}cur.push(this)});
+	jQuery.each(fix, function(){if(this[1])jQuery(this).height(Math.max.apply(Math, jQuery.map(this, function(el){return jQuery(el).height()})))});
+});
+
+//Enable bootstrap stuff
+jQuery(function(){
+	jQuery('.alert').alert();
+	jQuery('.btn[data]').button();
+});
+
+//Creditcard check
+jQuery(document).on('keyup change', 'input', {Visa: /^4[0-9]{12}(?:[0-9]{3})?$/, MasterCard: /^5[1-5][0-9]{14}$/}, function(e){
+	if(this.name != 'creditCardNumber')return;
+	var self = e.data.self || (e.data.self = jQuery(this));
+	var type = e.data.type || (e.data.type = jQuery('input[name="creditCardType"]'));
+	var card = jQuery.map(e.data, function(v, k){if(jQuery.type(v) === 'regexp' && v.test(self.val()))return k}).pop() || '';
+	self.attr('data-card', card);
+	type.val(card);
+});
+
+//Post editor
+jQuery(document).on('submit change', '.single-project', {}, function(e){
+	var self = e.data.self || (e.data.self = jQuery(this));
+	var save = e.data.save || (e.data.save = jQuery('[name="save"]', this));
+	if(e.type === 'change')return save.prop('disabled', false).button('reset');
+	
+	//TODO: Make better by doing button states more visible
+
+	var stop = e.preventDefault();
+	var send = jQuery.post(self.attr('action'), self.serializeArray(), function(data){
+		console.log(data);
+		save.button('complete').prop('disabled', true);
+	});
+});
+
+//Plupload
+jQuery(function(){
+	jQuery('.uploader').each(function(i, self){
+		var textarea = jQuery('textarea:hidden', self);
+		var settings = jQuery.parseJSON(jQuery.trim(textarea.val()));
+		var uploader = new plupload.Uploader(settings);
+
+		var drop = jQuery('#' + settings.drop_element);
+		drop.on({
+			'dragover': function(e){e.preventDefault();drop.addClass('hover')},
+			'dragleave': function(e){e.preventDefault();drop.removeClass('hover')},
+		});
+
+		uploader.bind('Init', function(up){textarea.val('')});
+		uploader.init();
+		uploader.bind('FilesAdded', function(up, files){
+			jQuery.each(files, function (i, file) {
+				jQuery('.uploader-queue', self).append(
+					'<div class="file" id="' + file.id + '"><b>' +
+					file.name + '</b> (<span>' + plupload.formatSize(0) + '</span>/' + plupload.formatSize(file.size) + ') ' +
+					'<div class="fileprogress"></div></div>');
+			});
+			up.refresh();
+			up.start();
+		});
+		uploader.bind('UploadProgress', function (up, file) {
+			jQuery('#' + file.id + " .fileprogress").width(file.percent + "%");
+			jQuery('#' + file.id + " span").html(plupload.formatSize(parseInt(file.size * file.percent / 100)));
+		});
+		uploader.bind('FileUploaded', function(up, file, response){
+			//console.log(response);
+			var response = response["response"];
+			var value = jQuery.trim(textarea.val());
+			jQuery('#' + file.id + " .fileprogress").width('100%');
+			jQuery('#' + file.id + " span").html('100%');
+			textarea.val(value? value + ',' + response: response);
+		});
+	});
 });

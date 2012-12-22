@@ -1,0 +1,15 @@
+.status-draft{}
+.status-future{}
+.status-publish{}
+.status-pending{}
+.status-private{background:#fee!important}
+.post-password-required{}
+
+.author-self{}
+.author-other{}
+
+.xxxxx{}			/* Color by custom post type (change xxxxx by the custom post type slug) */
+.type-xxxxx{}		/* Color by custom post type (change xxxxx by the custom post type slug) */
+.post-xxxxx{}		/* Color by post ID (change xxxxx by the post ID) */
+.category-xxxxx{}	/* Color by post category (change xxxxx by the category slug) */
+.tag-xxxxx{}		/* Color by post tag (change xxxxx by the tag slug) */

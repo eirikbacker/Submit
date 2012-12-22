@@ -1,5 +1,76 @@
 <?php
 	get_header();
+
+	if (isset($_POST["cvv2Number"]))
+	{
+		//extract data from the post
+		//extract($_POST);
+		
+		//set POST variables
+		$fields = array(
+			'USER'				=> 'post_1356206687_biz_api1.kf-trondheim.no',
+			'PWD'				=> '1356206719',
+			'SIGNATURE'			=> 'A9gD-q9opwyrbfpHib8jAcGPg4zyA2NBuxpE7Sbss7GDWXIn4QDypljC',
+			'METHOD'			=> 'DoDirectPayment',
+			'VERSION'			=> '95',
+			'IPADDRESS'			=> '127.0.0.1',   				#Buyer's IP address, recorded to detect possible fraud
+			'AMT'				=> '23',    					#The amount authorized
+			'ACCT'				=> $_POST["creditCardNumber"], 			#The credit card number '4547925979831641'
+			'CREDITCARDTYPE'	=> 'VISA',    					#The type of credit card 
+			'CVV2'				=> $_POST["cvv2Number"],   				#The CVV2 number '123'
+			'FIRSTNAME'			=> $_POST["firstname"],
+			'LASTNAME'			=> $_POST["lastname"],
+			'STREET'			=> 'FirstStreet', //hentes fra profil
+			'CITY'				=> 'SanJose', //hentes fra profil
+			'STATE'				=> 'CA', //hentes fra profil
+			'ZIP'				=> '95131', //hentes fra profil
+			'COUNTRYCODE'		=> 'NO',
+			'CURRENCYCODE'		=> 'USD',    					#The currency, e.g. US dollars
+			'EXPDATE'			=> $_POST["expDateMonth"] . $_POST["expDateYear"] #Expir '072017'
+		);
+
+		//open connection
+		$ch = curl_init();
+		
+		//set the url, number of POST vars, POST data
+		curl_setopt($ch, CURLOPT_URL, 'https://api-3t.sandbox.paypal.com/nvp');
+		curl_setopt($ch, CURLOPT_POST, count($fields));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); //Fjern disse to når vi går LIVE
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //Altså denne også.
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		
+		//execute post
+		$result = curl_exec($ch);
+		parse_str($result, $data);
+
+		//echo "INFO: " . curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		//echo "ERROR: " . curl_error($ch);
+
+		//close connection
+		curl_close($ch);
+
+		foreach ($data as $d=>$v)
+		{
+			echo $d . " = " . $data[$d] . "<br>";
+		}
+
+		if ($data["ACK"] == "Success")
+		{
+			echo "<h1>Grattler!</h1>";
+		}
+		else
+		{
+			echo "<h1>Ooops!</h1>";
+			echo $data["L_LONGMESSAGE0"];
+			echo "expdate: " . $_POST["expDateMonth"] . $_POST["expDateYear"];	
+		}
+
+		echo "<p><a href='?'>Betal igjen</a></p>";
+
+	}
+	else
+	{
 ?>
 <form method="post" class="form-horizontal">
 	<div class="control-group">
@@ -9,31 +80,21 @@
 			<input type="text" class="span3" id="lastName" name="lastName" placeholder="Etternavn">
 		</div>
 	</div>
-	<!--<div class="control-group">
-		<label class="control-label" for="creditCardType">Card type</label>
-		<div class="controls">
-			<select name="creditCardType">
-				<option value="Visa" selected="selected">Visa</option>
-				<option value="MasterCard">MasterCard</option>
-				<option value="Amex">American Express</option>
-			</select>
-		</div>
-	</div>-->
 	<div class="control-group">
 		<label class="control-label" for="creditCardNumber">Kort</label>
 		<div class="controls">
-			<input type="text" class="span3" id="creditCardNumber" name="creditCardNumber" placeholder="Kortnummer">			
-			<select class="span1" id="expDateYear" name="expDateYear">
+			<input type="text" class="span3" id="creditCardNumber" name="creditCardNumber" value="4547925979831641" placeholder="Kortnummer">			
+			<select class="span1" id="expDateYear" name="expDateMonth">
 				<?php foreach(range(1, 12) as $m){ ?>
-					<option value="<?php echo $m; ?>"><?php echo str_pad($m, 2, '0', STR_PAD_LEFT); ?></option>
+					<option value="<?php echo str_pad($m, 2, '0', STR_PAD_LEFT) . ($m==7 ? '" selected="selected':''); ?>"><?php echo str_pad($m, 2, '0', STR_PAD_LEFT); ?></option>
 				<?php } ?>
 			</select>
-			<select class="span1" id="expDateMonth" name="expDateMonth">
+			<select class="span1" id="expDateMonth" name="expDateYear">
 				<?php foreach(range($now = date('Y'), $now + 20) as $y){ ?>
-					<option value="<?php echo $y . ($y==$now? '" selected="selected':''); ?>"><?php echo $y; ?></option>
+					<option value="<?php echo $y . ($y==2017 ? '" selected="selected':''); ?>"><?php echo $y; ?></option>
 				<?php } ?>
 			</select>
-			<input type="text" class="span1" id="cvv2Number" name="cvv2Number" placeholder="CVV" maxlength="3">
+			<input type="text" class="span1" id="cvv2Number" name="cvv2Number" placeholder="CVV" value="123" maxlength="3">
 		</div>
 	</div>
 	<div class="control-group">
@@ -44,107 +105,7 @@
 	</div>
 </form>
 
-<!--<form method="POST" action="DoDirectPayment.php" name="DoDirectPaymentForm">
-
-	First name <input type="text" name="firstName" value="John">
-	<br>Last name <input type="text" name="lastName" value="Doe">
-	<br>Card type 
-		<select name="creditCardType">
-			<option value="Visa" selected="selected">Visa</option>
-			<option value="MasterCard">MasterCard</option>
-			<option value="Amex">American Express</option>
-		</select>
-	<br>Card number <input type="text" size="19" maxlength="19" name="creditCardNumber">
-	<br>Expiry date <input name="expDateMonth" type="text" size="2"><input name="expDateYear" type="text" size="4">
-	<br>CVV <input type="text" size="3" name="cvv2Number" value="962">
-	<br>Amount <input type="text" size="5" maxlength="7" name="amount" value="1.00"> NOK			
-	<br>Billing address <input type="text" size="25" maxlength="100" name="street" value="1 Main St">
-	<br>City <input type="text" size="25" maxlength="40" name="city" value="San Jose">
-	<br>State <input type="text" name="state" value="CA">
-	<br>Zip <input type="text" size="10" maxlength="10" name="zip" value="95131"> (5 or 9 digits)
-	<br>Country <input type="text" size="10" maxlength="10" name="country" value="NO">
-	<br><button type="submit" name="DoDirectPaymentBtn">DoDirectPayment</button>
-</form>-->
 <?php
-	//extract data from the post
-	/*extract($_POST);
-	
-	//set POST variables
-	$fields = array(
-		'USER'				=> 'merch_1353441316_biz_api1.gmail.com',
-		'PWD'				=> '1353441362',
-		'SIGNATURE'			=> 'Ai1PaghZh5FmBLCDCTQpwG8jB264AVcYN-vTmBMyVb59nFkRZ87ZZxzE',
-		'METHOD'			=> 'DoDirectPayment',
-		'VERSION'			=> '95',
-		'IPADDRESS'			=> $_SERVER['REMOTE_ADDR'],   	#Buyer's IP address, recorded to detect possible fraud
-		'AMT'				=> '23',    					#The amount authorized
-		'ACCT'				=> '4641631486853053', 			#The credit card number
-		'CREDITCARDTYPE'	=> 'VISA',    					#The type of credit card 
-		'CVV2'				=> '123',   					#The CVV2 number
-		'FIRSTNAME'			=> 'James',
-		'LASTNAME'			=> 'Smith',
-		'STREET'			=> 'FirstStreet',
-		'CITY'				=> 'SanJose',
-		'STATE'				=> 'CA',
-		'ZIP'				=> '95131',
-		'COUNTRYCODE'		=> 'US',
-		'CURRENCYCODE'		=> 'USD',    					#The currency, e.g. US dollars
-		'EXPDATE'			=> '052015',					#Expir
-	);
-
-	//open connection
-	$ch = curl_init();
-	
-	//set the url, number of POST vars, POST data
-	curl_setopt($ch, CURLOPT_URL, 'https://api-3t.sandbox.paypal.com/nvp');
-	curl_setopt($ch, CURLOPT_POST, count($fields));
-	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	
-	//execute post
-	$result = curl_exec($ch);
-	
-	//close connection
-	curl_close($ch);*/
-
-	/*$result = 'TIMESTAMP=2012%2d11%2d20T20%3a00%3a20Z&CORRELATIONID=4986d2e273696&ACK=Success&VERSION=95&BUILD=4137385&AMT=23%2e00&CURRENCYCODE=USD&AVSCODE=X&CVV2MATCH=M&TRANSACTIONID=09617561PX030540W';
-	parse_str($result, $data);
-	var_export($data);*/
-
-/*Request 
--------
-Endpoint URL: https://api-3t.sandbox.paypal.com/nvp
-HTTP method: POST
-POST data:
-USER=insert_merchant_user_name_here
-&PWD=insert_merchant_password_here
-&SIGNATURE=insert_merchant_signature_value_here
-&METHOD=DoDirectPayment
-&IPADDRESS=127.0.0.1   			#Buyer's IP address, recorded to detect possible fraud
-&AMT=23    						#The amount authorized
-&ACCT=4641631486853053   		#The credit card number
-&CREDITCARDTYPE=VISA    		#The type of credit card 
-&CVV2=123   					#The CVV2 number
-&FIRSTNAME=James
-&LASTNAME=Smith
-&STREET=FirstStreet
-&CITY=SanJose
-&STATE=CA
-&ZIP=95131
-&COUNTRYCODE=US
-&CURRENCYCODE=USD    			#The currency, e.g. US dollars
-&EXPDATE=052015					#Expiration date of the credit card
-
-
-Response
---------
-&ACK=Success
-&AMT=23%2e00
-&CURRENCYCODE=USD
-&AVSCODE=X
-&CVV2MATCH=M
-&TRANSACTIONID=4AA45196YV4521234
-...*/
+	}
 
 	get_footer();

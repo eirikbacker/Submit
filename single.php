@@ -1,6 +1,6 @@
 <?php
-	//Prevent users from seeing eachothers prjects
-	if(isset($post) && get_current_user_id() != $post->post_author)wp_redirect(home_url());
+	if(isset($post) && get_current_user_id() != $post->post_author)wp_redirect(home_url());											//Validate user
+	if(isset($_GET['delete'])){check_admin_referer('delete');if(isset($post))wp_delete_post($post->ID);wp_redirect(home_url());}	//Perform delete
 	get_header();
 
 	$meta = array(
@@ -12,6 +12,7 @@
 		'illustrator' => 'Illustrasjon',
 		'photo'       => 'Foto',
 		'url'         => 'Internettadresse',
+		'video'       => 'Videoadresse (youtube/vimeo)',
 	);
 ?>
 <form class="single-project" method="post" action="<?php echo admin_url('admin-ajax.php'); ?>?action=submit_save">
@@ -22,13 +23,12 @@
 		<dt><i class="icon-info-sign"></i> <?php _e('Info', get_template()); ?></dt>
 		<dd>
 			<div class="row-fluid">
-				<div class="span4"><label>Byrå/Utøver</label><input class="input-block-level" type="text" name="agency" value="<?php echo wp_get_current_user()->user_login; ?>" readonly="readonly"></div>
 				<?php if($i=1)foreach($meta as $k=>$v){ ?>
-					<?php if(!($i++%3))echo '</div><div class="row-fluid">'; ?>
 					<div class="span4">
 						<label><?php echo $v; ?></label>
 						<input class="input-block-level" type="text" name="<?php echo $k; ?>" value="<?php the_project($k); ?>">
 					</div>
+					<?php if(!($i++%3))echo '</div><div class="row-fluid">'; ?>
 				<?php } ?>
 			</div>
 		</dd>
@@ -43,34 +43,35 @@
 		</dd>
 		
 		<dt><i class="icon-eye-open"></i> <?php _e('Media', get_template()); ?></dt>
-		<dd>
-			<div id="uploader" class="uploader">
-				<label class="muted"><?php _e('Slipp filer her', get_template()); ?></label>
-				<a id="uploader-button" class="btn" href="#"><i class="icon-plus"></i> <?php _e('Velg filer', get_template()); ?></a>
-				<div class="uploader-queue"></div>
-				<textarea style="display:none" name="files">
-					<?php echo json_encode(array(
-						'runtimes'            => 'html5,silverlight,flash,html4',
-						'container'           => 'uploader',
-						'drop_element'        => 'uploader',
-						'browse_button'       => 'uploader-button',
-						'file_data_name'      => 'async-upload',
-						'max_file_size'       => '20mb',
-						'url'                 => admin_url('admin-ajax.php'),
-						'flash_swf_url'       => includes_url('js/plupload/plupload.flash.swf'),
-						'silverlight_xap_url' => includes_url('js/plupload/plupload.silverlight.xap'),
-						'filters'             => array(array('title'=>'Allowed Files', 'extensions'=>'*')),
-						'multiple_queues'     => true,
-						'multipart'           => true,
-						'urlstream_upload'    => true,
-						'multi_selection'     => true,
-						'multipart_params'    => array(							//additional post data to send to our ajax hook
-							'_ajax_nonce' => wp_create_nonce('submit_file'),	//will be added per uploader
-							'action'      => 'submit_file',						//the ajax action name
-						)
-					)); ?>
-				</textarea>
-				<!--<div class="progress progress-striped active"><div class="bar" style="width:40%"></div></div>-->
+		<dd class="clearfix">
+			<?php if(isset($post))array_map('the_project_file', get_children('post_type=attachment&post_parent=' . $post->ID)); ?>
+			<div class="file file-upload" id="<?php echo $UPLOAD = uniqid('UPLOAD'); ?>">
+				<div class="file-plus" id="<?php echo $UPLOAD; ?>-button">
+					<?php _e('Klikk eller dra-og-slipp filer her for å laste opp', get_template()); ?>
+					<textarea hidden="hidden">
+						<?php echo json_encode(array(
+							'container'           => $UPLOAD,
+							'drop_element'        => $UPLOAD,
+							'browse_button'       => $UPLOAD . '-button',
+							'runtimes'            => 'html5,silverlight,flash,html4',
+							'file_data_name'      => 'file',
+							'max_file_size'       => '20mb',
+							'url'                 => admin_url('admin-ajax.php'),
+							'flash_swf_url'       => includes_url('js/plupload/plupload.flash.swf'),
+							'silverlight_xap_url' => includes_url('js/plupload/plupload.silverlight.xap'),
+							'filters'             => array(array('title'=>'Allowed Files', 'extensions'=>'*')),
+							'multiple_queues'     => true,
+							'multipart'           => true,
+							'urlstream_upload'    => true,
+							'multi_selection'     => true,
+							'multipart_params'    => array(							//additional post data to send to our ajax hook
+								'_ajax_nonce' => wp_create_nonce('submit_file'),	//will be added per uploader
+								'parent'      => isset($post)? $post->ID : 0,		//parent post id
+								'action'      => 'submit_file',						//the ajax action name
+							)
+						)); ?>
+					</textarea>
+				</div>
 			</div>
 		</dd>
 		
@@ -97,7 +98,7 @@
 		<dt>&nbsp;</dt>
 		<dd>
 			<br>
-			<button type="submit" name="save" disabled="disabled" class="btn btn-primary" 
+			<button type="submit" name="save" class="btn btn-primary" 
 				data-complete-text="<i class='icon-white icon-ok'></i> <?php _e('Prosjektet er lagret!', get_template()); ?>" 
 				 data-loading-text="<i class='icon-white icon-time'></i> <?php _e('Lagrer...', get_template()); ?>">
 				<?php _e('Lagre prosjekt', get_template()); ?>
@@ -106,7 +107,7 @@
 				<i class="icon-white icon-trash"></i> 
 				<?php _e('Slett', get_template()); ?>
 			</a>
-			<input type="hidden" name="ID" value="<?php echo isset($post)? get_the_ID() : '0'; ?>">
+			<input type="hidden" name="id" value="<?php echo isset($post)? $post->ID : '0'; ?>">
 			<?php wp_nonce_field('submit_save'); ?>
 		</dd>
 	</dl>
@@ -118,7 +119,9 @@
 		</div>
 		<div class="modal-footer">
 			<a href="#" class="btn" data-dismiss="modal"><?php _e('Nei, ikke slett!', get_template()); ?></button>
-			<a href="#" class="btn btn-danger"><?php _e('Ja, vekk med det', get_template()); ?></a>
+			<a href="<?php echo wp_nonce_url(get_permalink() . '?delete', 'delete'); ?>" class="btn btn-danger">
+				<?php _e('Ja, vekk med det', get_template()); ?>
+			</a>
 		</div>
 	</div>
 </form>

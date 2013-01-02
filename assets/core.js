@@ -8,7 +8,7 @@ jQuery(document).on('click', 'a', function(e){
 	if(this.hostname && this.hostname !== location.hostname)return e.metaKey || !(window.open(this.href)||1);
 });
 
-//Equalize
+//Equalize columns
 jQuery(window).on('load resize', {}, function(e){
 	var box = (e.data.box = e.data.box || jQuery('.equalize')).css('height','auto'), fix = [], x, cur;
 	jQuery.each(box, function(){if(this.offsetTop !== x){x = this.offsetTop;fix.push(cur = [])}cur.push(this)});
@@ -31,57 +31,55 @@ jQuery(document).on('keyup change', 'input', {Visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
 	type.val(card);
 });
 
-//Post editor
-jQuery(document).on('submit change', '.single-project', {}, function(e){
+//Save project
+jQuery(document).on('submit', '.single-project', {}, function(e){
 	var self = e.data.self || (e.data.self = jQuery(this));
 	var save = e.data.save || (e.data.save = jQuery('[name="save"]', this));
-	if(e.type === 'change')return save.prop('disabled', false).button('reset');
-	
-	//TODO: Make better by doing button states more visible
-
 	var stop = e.preventDefault();
-	var send = jQuery.post(self.attr('action'), self.serializeArray(), function(data){
-		console.log(data);
-		save.button('complete').prop('disabled', true);
+
+	jQuery.post(self.attr('action'), self.serializeArray(), function(href){
+		var a = jQuery.extend(document.createElement('a'), {href:href});
+		if(a.hostname == location.hostname && a.href != location.href)location = a.href;
+		else save.button('complete').delay(2000).queue(function(){save.button('reset')});
 	});
+});
+
+//Delete images
+jQuery(document).on('click', '.file', {}, function(e){
+	var send = jQuery(this).closest('form').attr('action').split('?').shift();
+	var data = jQuery(this).not('.file-upload').remove().find('input').val();
+	if(data)jQuery.post(send, data);
 });
 
 //Plupload
 jQuery(function(){
-	jQuery('.uploader').each(function(i, self){
-		var textarea = jQuery('textarea:hidden', self);
-		var settings = jQuery.parseJSON(jQuery.trim(textarea.val()));
+	jQuery('.file-upload').each(function(i){
+		var settings = jQuery.parseJSON(jQuery.trim(jQuery('textarea', this).val()));
 		var uploader = new plupload.Uploader(settings);
-
-		var drop = jQuery('#' + settings.drop_element);
-		drop.on({
-			'dragover': function(e){e.preventDefault();drop.addClass('hover')},
-			'dragleave': function(e){e.preventDefault();drop.removeClass('hover')},
+		var self = jQuery(this).on({
+			'dragover':  function(e){e.preventDefault();self.addClass('hover')},
+			'dragleave': function(e){e.preventDefault();self.removeClass('hover')},
 		});
 
-		uploader.bind('Init', function(up){textarea.val('')});
 		uploader.init();
 		uploader.bind('FilesAdded', function(up, files){
-			jQuery.each(files, function (i, file) {
-				jQuery('.uploader-queue', self).append(
-					'<div class="file" id="' + file.id + '"><b>' +
-					file.name + '</b> (<span>' + plupload.formatSize(0) + '</span>/' + plupload.formatSize(file.size) + ') ' +
-					'<div class="fileprogress"></div></div>');
+			jQuery.each(files, function(i, file){
+				var prog = jQuery('<div>').addClass('file-prog progress progress-striped active');
+				var size = jQuery('<div>').addClass('file-size').text(plupload.formatSize(0) + ' / ' + plupload.formatSize(file.size));
+				var bar  = jQuery('<div>').addClass('file-bar bar').appendTo(prog);
+
+				jQuery('<div>', {id:file.id}).addClass('file').append(size,prog).insertBefore(self);
 			});
+			self.removeClass('hover');
 			up.refresh();
 			up.start();
 		});
-		uploader.bind('UploadProgress', function (up, file) {
-			jQuery('#' + file.id + " .fileprogress").width(file.percent + "%");
-			jQuery('#' + file.id + " span").html(plupload.formatSize(parseInt(file.size * file.percent / 100)));
+		uploader.bind('UploadProgress', function(up, file){
+			jQuery('#' + file.id + ' .file-size').text(plupload.formatSize(parseInt(file.size*file.percent/100)) + ' / ' + plupload.formatSize(file.size));
+			jQuery('#' + file.id + ' .file-bar').width(file.percent + '%');
 		});
-		uploader.bind('FileUploaded', function(up, file, response){
-			//console.log(response);
-			var response = response["response"];
-			var value = jQuery.trim(textarea.val());
-			jQuery('#' + file.id + " .fileprogress").width('100%');
-			jQuery('#' + file.id + " span").html('100%');
-			textarea.val(value? value + ',' + response: response);
+		uploader.bind('FileUploaded', function(up, file, data){
+			jQuery('#' + file.id).replaceWith(data.response);
 		});
 	});
 });

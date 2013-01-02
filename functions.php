@@ -13,6 +13,7 @@
 
 	//Customize admin
 	add_theme_support('post-thumbnails');
+	add_image_size('project', 120, 140, true);
 	add_filter('show_admin_bar','__return_false');
 
 	//Customize TinyMCE
@@ -42,7 +43,7 @@
 	add_filter('protected_title_format', 'title_format');
 	function title_format(){return '%s';}
 
-	//Span shortcodes
+	//Span (columns in bootstrap) shortcodes
 	add_filter('the_content', 'shortcode_fix');
 	function shortcode_fix($h){return strtr($h, array('<p>['=>'[', ']</p>'=>']', ']<br />'=>']'));}
 	function shortcode_col($a,$h='',$c=''){return '<div class="'.$c.'">'.do_shortcode($h).'</div>';}
@@ -87,6 +88,10 @@
 	add_action('template_redirect','login_required');
 	function login_redirect(){if(!current_user_can('administrator') && !(defined('DOING_AJAX') && DOING_AJAX))wp_redirect(home_url());}
 	function login_required(){if(!is_user_logged_in())auth_redirect();}
+	
+	//Filter posts in admin by user
+	add_action('restrict_manage_posts', 'author_filter');
+	function author_filter(){wp_dropdown_users('name=author&show_option_all=View+all+authors&selected=' . filter_input(INPUT_GET, 'author'));}
 
 
 /* ------------------------------------------------------------------------------------- *
@@ -124,7 +129,7 @@
 	}
 
 	//Get total outstanding for post
-	function get_post_total($post = null, $total = 0){
+	function get_post_total($post = null){
 		$post = is_int($post)? $post : ($post? $post->ID : get_the_ID());
 		if(isset($GLOBALS[$k = 'get_post_total_' . $post]))return $GLOBALS[$k];
 
@@ -141,28 +146,38 @@
 	//Project meta handeling
 	function the_project($k){echo empty($GLOBALS['post'])? '' : esc_attr(get_post_meta($GLOBALS['post']->ID, $k, true));}
 
-	//Images uploader
+	//Echo file-thumbnail based on ID
+	function the_project_file($id){
+		if(!strlen($img = wp_get_attachment_image($id = is_int($id)? $id : $id->ID, 'project', true, 'class=file-icon')))return;
+		$val = http_build_query(array('action'=>'submit_file_delete', 'id'=>$id, '_ajax_nonce'=>wp_create_nonce('submit_file_delete')));
+		echo '<div class="file file-trash">' . __('Klikk her for å slette filen fra prosjektet', get_template());
+		echo '<input type="hidden" name="file[' . $id . ']" value="' . $val . '">' . $img . '</div>';
+	}
+
+	//File upload and delete
 	add_action('init', 'submit_init');
 	add_action('wp_ajax_submit_file', 'submit_file');
-	add_action('wp_ajax_submit_save', 'submit_save');
+	add_action('wp_ajax_submit_file_delete', 'submit_file_delete');
 	function submit_init(){wp_enqueue_script('plupload-all');}
-	function submit_file(){check_ajax_referer('submit_file');die(strval(media_handle_upload('async-upload', 0)));}
+	function submit_file_delete(){check_ajax_referer('submit_file_delete');wp_delete_post($_POST['id']);}
+	function submit_file(){
+		check_ajax_referer('submit_file');
+		if(!is_wp_error($id = media_handle_upload('file', intval($_REQUEST['parent']))))die(the_project_file($id));
+		else die('<div class="file">' . $id->get_error_message() . '</div>');
+	}
+
+	//Post save and delete
+	add_action('wp_ajax_submit_save', 'submit_save');
 	function submit_save(){
 		check_ajax_referer('submit_save');
 
-		$meta = explode(',', 'client,ad,leader,text,consultant,illustrator,photo,url,background,concept,conditions');
-		$data = wp_parse_args(array('post_status'=>'publish','post_title'=>$_POST['title'],'ID'=>$_POST['ID']), get_post($_POST['ID'], ARRAY_A));
+		$meta = explode(',', 'client,ad,leader,text,consultant,illustrator,photo,url,video,background,concept,conditions');
+		$data = wp_parse_args(array('post_status'=>'publish','post_title'=>$_POST['title'],'ID'=>$_POST['id']), get_post($_POST['id'], ARRAY_A));
 		$post = wp_insert_post($data, false);
 
-		//Set categories
-		if($post)wp_set_post_terms($post, $_POST['cats'], 'category');
-
-		//Store meta values
-		if($post)foreach($meta as $k)update_post_meta($post, $k, sanitize_text_field($_POST[$k]));
-
-		//Attach image to post
-		//$id = wp_update_post(array('ID'=>$id, 'post_parent'=>87));
-
-		die(strval($post));
+		if(!empty($_POST['cats']))wp_set_post_terms($post, $_POST['cats'], 'category');											//Set categories
+		if(!empty($_POST['file']))foreach($_POST['file'] as $id=>$v)wp_update_post(array('ID'=>$id, 'post_parent'=>$post));		//Attach images to post
+		foreach($meta as $k)if(isset($_POST[$k]))update_post_meta($post, $k, sanitize_text_field($_POST[$k]));					//Store meta values
+		die(get_permalink($post));																								//Return updated post url
 	}
 

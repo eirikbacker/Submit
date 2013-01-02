@@ -8,6 +8,7 @@
 
 ******************************************************************/
 
+[hidden]{display:none}
 html{overflow-y:scroll}
 body{padding:80px 0}
 
@@ -15,11 +16,14 @@ textarea{resize:vertical}
 input[data-card="Visa"]{background:#fff url(assets/visa.png) 98% 50% no-repeat}
 input[data-card="MasterCard"]{background:#fff url(assets/mastercard.png) 98% 50% no-repeat}
 
-.uploader{border:1px dashed #ccc;border-radius:7px;margin-bottom:20px;padding:20px}
-.uploader.hover{border-color:#000}
-.uploader-queue{width:60%}
-.uploader-queue .file{background:#ececec;border:solid 1px #ccc;margin-bottom:4px;padding:5px}
-.uploader-queue .fileprogress{width:0;background:#B7C53D;height:5px}
+.file:hover,.file.hover{border-color:#000;color:#000}
+.file{font-size:12px;line-height:1.4em;text-align:center;color:#777;cursor:pointer;position:relative}
+.file{float:left;width:100px;height:120px;border:1px solid #ddd;border-radius:4px;padding:10px;margin:0 5px 5px 0;overflow:hidden}
+.file-icon{position:absolute;top:0;left:0;width:100%;border-radius:4px;overflow:hidden;cursor:pointer;-webkit-background-clip:padding-box}
+.file-icon:hover{opacity:.1;filter:alpha(opacity=10)}
+.file-trash:before{font-weight:bold;font-size:50px;line-height:55px;display:block;content:'\00D7';color:#da4f49}
+.file-plus:before {font-weight:bold;font-size:50px;line-height:55px;display:block;content:'+'}
+.file-size{text-align:left;display:block}
 
 .index-project{border:1px solid #ddd;background:#f6f6f6;padding:20px;margin-bottom:25px;-moz-border-radius:4px;border-radius:4px}
 .index-project.muted{border:1px dashed #999;background:none}
